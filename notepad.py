@@ -9,6 +9,7 @@ from tkinter.filedialog import asksaveasfile
 from tkinter import END
 from tkinter import INSERT
 from tkinter.messagebox import showerror
+from tkinter.messagebox import askquestion
 #----------------------------------------------------------------------------
 path = ''
 def open_file():
@@ -17,7 +18,7 @@ def open_file():
     try:
         file_path = askopenfilename(title='Open file', filetypes=[('Text Documents','*.txt'),('All files','*.*')])
         path = file_path
-        x = open(file_path, 'r')
+        x = open(file_path, 'rb')
         text.delete(1.0, END)
         text.insert(INSERT, x.read())
         x.close()
@@ -37,8 +38,21 @@ def save_file():
         o.close()
 def new_file():
     global path
-    path = ''
-    text.delete(1.0, END)
+    if len(text.get(1.0, END))==1:
+        path = ''
+        text.delete(1.0, END)
+    else:
+        a = askquestion(title='Notepad', message='Do you wand to save changes?')
+        print(a)
+        if a == 'yes':
+            file_path = asksaveasfile(title='Save file', filetypes=[('Text Documents', '*.txt'),('All files','*.*')], defaultextension=[('Text Documents', '*.txt'),('All files','*.*')])
+            path = file_path.name
+            o = open(path, 'w')
+            o.write(text.get(1.0, END))
+            o.close()
+        if a == 'no':
+            path = ''
+            text.delete(1.0, END)
 #----------------------------------------------------------------------------
 window = Tk()
 window.title('Notepad')
@@ -65,7 +79,6 @@ open_button.bind()
 open_button.grid(row=0, column=0)
 
 new_button = Button(frame_title, text='New',font=('',10), bd=0, bg='light green', command=new_file)
-new_button.bind()
 new_button.grid(row=0, column=1)
 
 save_button = Button(frame_title, text='Save', font=('',10), bd=0, bg='light pink', command=save_file)
@@ -75,17 +88,14 @@ save_button.grid(row=0, column=2)
 text = Text(frame_body,font=('Consolas',15), bd=0, fg='gray', highlightbackground='pink', highlightcolor='pink')
 text.pack(expand=1)
 
-text_scrollbar = Scrollbar(frame_body, command=text)
-text_scrollbar.pack(side='right' ,fill='y')
+#text_scrollbar = Scrollbar(frame_body, command=text)
+#text_scrollbar.pack(side='right' ,fill='y')
 
 
 #----------------------------------------------------------------------------
 window.mainloop()
 #----------------------------------------------------------------------------
-'''
-__              __
-\ \    ____    / /
+'''\ \    ____    / /
  \ \  / __ \  / /
   \ \/ /  \ \/ /
-   \__/    \__/
-   '''
+   \__/    \__/'''
